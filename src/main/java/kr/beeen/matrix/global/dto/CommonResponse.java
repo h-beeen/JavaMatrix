@@ -10,15 +10,26 @@ import java.util.Map;
 
 @Builder(access = AccessLevel.PRIVATE)
 public record CommonResponse(
-        String errorCode,
+        String code,
         String message,
         String timestamp,
         Object data
 ) {
 
+    public static CommonResponse ok(Object data) {
+        HttpStatus httpStatus = HttpStatus.OK;
+
+        return CommonResponse.builder()
+                .code(httpStatus.toString())
+                .message(httpStatus.getReasonPhrase())
+                .timestamp(LocalDateTime.now().toString())
+                .data(data)
+                .build();
+    }
+
     public static CommonResponse getClientErrorResponse(ErrorEntity<?> errorEntity) {
         return CommonResponse.builder()
-                .errorCode(errorEntity.toString())
+                .code(errorEntity.toString())
                 .message(errorEntity.getMessage())
                 .timestamp(LocalDateTime.now().toString())
                 .data(null)
@@ -27,7 +38,7 @@ public record CommonResponse(
 
     public static Map<String, Object> getDefaultErrorResponse(HttpStatus httpStatus) {
         return Map.ofEntries(
-                Map.entry("errorCode", "MATRIX_XX" + httpStatus.value()),
+                Map.entry("code", "MATRIX_XX" + httpStatus.value()),
                 Map.entry("message", httpStatus.getReasonPhrase()),
                 Map.entry("timestamp", LocalDateTime.now().toString()),
                 Map.entry("data", httpStatus.series())

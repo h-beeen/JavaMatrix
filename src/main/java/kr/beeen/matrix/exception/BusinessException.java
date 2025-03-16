@@ -24,7 +24,7 @@ public class BusinessException extends RuntimeException {
     }
 
     public static BusinessException of(
-            ErrorEntity errorEntity,
+            ErrorEntity<?> errorEntity,
             Exception exception
     ) {
         return new BusinessException(errorEntity, exception);
